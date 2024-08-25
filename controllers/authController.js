@@ -15,9 +15,9 @@ exports.register = async (req, res) => {
 
     const user = await User.create({ name, email, password: hashedPassword, role })
 
-    res.status(201).json({ message: 'Đăng ký thành công', user })
+    res.status(201).json({ message: 'Register successfully', user })
   } catch (error) {
-    res.status(500).json({ message: 'Lỗi khi đăng ký', error })
+    res.status(500).json({ message: 'Error', error })
   }
 }
 
@@ -27,14 +27,14 @@ exports.login = async (req, res) => {
 
     const user = await User.findOne({ where: { email } })
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).json({ message: 'Thông tin đăng nhập không hợp lệ' })
+      return res.status(401).json({ message: 'Login invalid' })
     }
 
     const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' })
 
-    res.status(200).json({ message: 'Đăng nhập thành công', token })
+    res.status(200).json({ message: 'Login successfully', token })
   } catch (error) {
-    res.status(500).json({ message: 'Lỗi khi đăng nhập', error })
+    res.status(500).json({ message: 'Error', error })
   }
 }
 
@@ -45,11 +45,11 @@ exports.getUser = async (req, res) => {
     })
 
     if (!user) {
-      return res.status(404).json({ message: 'Người dùng không tồn tại' })
+      return res.status(404).json({ message: 'There is no User ' })
     }
 
     res.status(200).json({ user })
   } catch (error) {
-    res.status(500).json({ message: 'Lỗi khi lấy thông tin người dùng', error })
+    res.status(500).json({ message: 'Fail to fetch user data', error })
   }
 }
