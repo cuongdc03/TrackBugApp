@@ -2,6 +2,7 @@ const express = require('express')
 const projectController = require('../controllers/projectController')
 const router = express.Router()
 
+router.get('/bugFromProject/:id', projectController.getBugsByProjectId)
 router.post('/projects', projectController.createProject)
 router.get('/projects', projectController.getAllProjects)
 router.get('/projects/:id', projectController.getProjectById)

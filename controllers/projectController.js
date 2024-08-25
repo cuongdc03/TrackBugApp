@@ -1,5 +1,7 @@
 const moment = require('moment')
 const Project = require('../models/Project')
+const Bug = require('../models/Bug')
+const User = require('../models/User')
 
 exports.createProject = async (req, res) => {
   try {
@@ -33,20 +35,79 @@ exports.getAllProjects = async (req, res) => {
 
 exports.getProjectById = async (req, res) => {
   try {
-    const { id } = req.params
-    const project = await Project.findByPk(id)
+    const { id } = req.params;
 
-    if (!project) {
-      return res.status(404).json({ message: 'Project not found' })
+    // Fetch all bugs for the given project id and include the associated project and user
+    const bugs = await Bug.findAll({
+      where: { project_id: id },
+      include: [
+        {
+          model: Project,
+          as: 'project',
+          attributes: ['id', 'name', 'description'] // Select only the required project attributes
+        },
+        {
+          model: User,
+          as: 'assignedUser',
+          attributes: ['id', 'name'] // Select only the required user attributes
+        }
+      ]
+    });
+
+    if (bugs.length === 0) {
+      return res.status(404).json({ message: 'No bugs found for this project' });
     }
 
-    project.dataValues.createdAt = moment(project.createdAt).format('DD-MM-YYYY HH:mm:ss')
+    // Extract the project information from the first bug
+    const project = bugs[0].project;
+    project.dataValues.created_at = moment(project.created_at).format('DD-MM-YYYY HH:mm:ss');
 
-    res.status(200).json({ project })
+    // Extract bugs and format their created_at field
+    const formattedBugs = bugs.map(bug => {
+      bug.dataValues.created_at = moment(bug.created_at).format('DD-MM-YYYY HH:mm:ss');
+      return bug;
+    });
+
+    // Attach the formatted bugs to the project
+    project.bugs = formattedBugs;
+
+    res.status(200).json({ project });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching project', error })
+    res.status(500).json({ message: 'Error fetching project', error });
   }
-}
+};
+
+exports.getBugsByProjectId = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Fetch all bugs for the given project id and include the associated user (assignee)
+    const bugs = await Bug.findAll({
+      where: { project_id: id },
+      include: [
+        {
+          model: User,
+          as: 'assignedUser',
+          attributes: ['id', 'name'] // Select only the required user attributes
+        }
+      ]
+    });
+
+    if (bugs.length === 0) {
+      return res.status(404).json({ message: 'No bugs found for this project' });
+    }
+
+    // Format the created_at field for each bug
+    const formattedBugs = bugs.map(bug => {
+      bug.dataValues.created_at = moment(bug.created_at).format('DD-MM-YYYY HH:mm:ss');
+      return bug;
+    });
+
+    res.status(200).json({ bugs: formattedBugs });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching bugs', error });
+  }
+};
 
 exports.updateProject = async (req, res) => {
   try {

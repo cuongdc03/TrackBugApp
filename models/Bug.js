@@ -34,9 +34,9 @@ const Bug = sequelize.define(
     }
   },
   {
-    timestamps: true, // Ensure timestamps are enabled
-    createdAt: 'created_at', // Use 'created_at' column for createdAt
-    updatedAt: 'updated_at', // Use 'updated_at' column for updatedAt
+    timestamps: true, 
+    createdAt: 'created_at',
+    updatedAt: 'updated_at', 
     tableName: 'Bugs'
   }
 )
