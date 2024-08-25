@@ -34,9 +34,9 @@ const Bug = sequelize.define(
     }
   },
   {
-    timestamps: true, 
+    timestamps: true,
     createdAt: 'created_at',
-    updatedAt: 'updated_at', 
+    updatedAt: 'updated_at',
     tableName: 'Bugs'
   }
 )
