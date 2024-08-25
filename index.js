@@ -1,14 +1,16 @@
 require('dotenv').config();
 const express = require('express');
 const sequelize = require('./config/db');
-
 const authRoutes = require('./routes/authRoutes');
-
+const projectRoutes = require('./routes/projectRoutes');
+const bugRoutes = require('./routes/bugRoutes');
 const app = express();
 
 app.use(express.json());
 
-app.use('/api/auth', authRoutes);
+app.use('/api', authRoutes);
+app.use('/api', projectRoutes);
+app.use('/api', bugRoutes);
 
 sequelize.sync()
     .then(() => console.log('Database synchronized'))

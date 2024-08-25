@@ -20,19 +20,24 @@ const Bug = sequelize.define('Bug', {
         type: DataTypes.ENUM('low', 'medium', 'high'),
         allowNull: false
     },
-    createdAt: {
+    created_at: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
         allowNull: false
     },
-    updatedAt: {
+    updated_at: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
         allowNull: false
     }
+}, {
+    timestamps: true, // Ensure timestamps are enabled
+    createdAt: 'created_at', // Use 'created_at' column for createdAt
+    updatedAt: 'updated_at', // Use 'updated_at' column for updatedAt
+    tableName: 'Bugs'
 });
 
-Bug.belongsTo(User, { foreignKey: 'assignedTo' });
-Bug.belongsTo(Project, { foreignKey: 'projectId' });
+Bug.belongsTo(User, { foreignKey: 'assigned_to', as: 'assignedUser' });
+Bug.belongsTo(Project, { foreignKey: 'project_id', as: 'project' });
 
 module.exports = Bug;
